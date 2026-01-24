@@ -2,7 +2,8 @@ streamlit
 streamlit-option-menu
 python-dotenv
 plotly
-google-generativeai
+google-genai
 fastapi
 pymongo
 uvicorn
+
