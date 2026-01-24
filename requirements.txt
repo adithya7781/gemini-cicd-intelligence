@@ -1,0 +1,8 @@
+streamlit
+streamlit-option-menu
+python-dotenv
+plotly
+google-generativeai
+fastapi
+pymongo
+uvicorn
