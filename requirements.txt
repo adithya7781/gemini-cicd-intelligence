@@ -6,4 +6,7 @@ google-genai
 fastapi
 pymongo
 uvicorn
+PyPDF2
+openpyxl
+scikit-learn
 
