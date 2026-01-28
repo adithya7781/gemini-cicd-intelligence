@@ -18,4 +18,5 @@ def pipeline_status_chart(run_data):
         template="plotly_dark"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
+
