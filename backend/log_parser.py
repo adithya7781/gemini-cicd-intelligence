@@ -1,14 +1,73 @@
-def parse_log(text):
+import pandas as pd
+import json
+import PyPDF2
 
-    error_count = text.count("ERROR")
-    warning_count = text.count("WARNING")
 
-    failed = False
-    if "FAILED" in text or "Error:" in text:
-        failed = True
+def extract_pdf_text(file_path):
+
+    text = ""
+    with open(file_path, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        for page in reader.pages:
+            text += page.extract_text() or ""
+
+    return text
+
+
+def parse_log(file_path):
+
+    error_count = 0
+    warning_count = 0
+
+    ext = file_path.split(".")[-1].lower()
+
+    # TXT / LOG
+    if ext in ["log", "txt"]:
+
+        with open(file_path, "r", errors="ignore") as f:
+            lines = f.readlines()
+
+    # CSV
+    elif ext == "csv":
+
+        df = pd.read_csv(file_path)
+        lines = df.astype(str).values.flatten()
+
+    # Excel
+    elif ext == "xlsx":
+
+        df = pd.read_excel(file_path)
+        lines = df.astype(str).values.flatten()
+
+    # JSON
+    elif ext == "json":
+
+        with open(file_path) as f:
+            data = json.load(f)
+
+        lines = json.dumps(data).split(",")
+
+    # PDF
+    elif ext == "pdf":
+
+        text = extract_pdf_text(file_path)
+        lines = text.split("\n")
+
+    else:
+        raise ValueError("Unsupported file format")
+
+    # Count errors and warnings
+    for line in lines:
+
+        line = str(line).lower()
+
+        if "error" in line:
+            error_count += 1
+
+        if "warning" in line:
+            warning_count += 1
 
     return {
         "error_count": error_count,
-        "warning_count": warning_count,
-        "failed": failed
+        "warning_count": warning_count
     }
