@@ -8,4 +8,5 @@ def show_runs_table(data):
 
     st.subheader("Pipeline Metrics Summary")
 
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width="stretch")
+
