@@ -1,35 +1,45 @@
-from datetime import datetime
 import uuid
-
 from backend.log_parser import parse_log
+from backend.metrics_engine import calculate_severity, detect_anomaly
 from backend.mongo_client import runs, logs, metrics
 
 
 def ingest_log(file_path):
 
-    with open(file_path, "r", errors="ignore") as f:
-        content = f.read()
+    parsed = parse_log(file_path)
 
-    parsed = parse_log(content)
+    error_count = parsed["error_count"]
+    warning_count = parsed["warning_count"]
+
+    severity_score, severity_level = calculate_severity(error_count, warning_count)
+
+    anomaly_status = detect_anomaly(error_count, warning_count)
 
     run_id = str(uuid.uuid4())
 
+    status = "failed" if error_count > 0 else "success"
+
+    # Store pipeline run
     runs.insert_one({
         "run_id": run_id,
-        "status": "failed" if parsed["failed"] else "success",
-        "timestamp": datetime.utcnow()
+        "status": status
     })
 
+    # Store raw log stats
     logs.insert_one({
         "run_id": run_id,
-        "log_text": content,
-        "timestamp": datetime.utcnow()
+        "error_count": error_count,
+        "warning_count": warning_count
     })
 
+    # Store computed metrics
     metrics.insert_one({
         "run_id": run_id,
-        "error_count": parsed["error_count"],
-        "warning_count": parsed["warning_count"]
+        "error_count": error_count,
+        "warning_count": warning_count,
+        "severity_score": severity_score,
+        "severity_level": severity_level,
+        "anomaly_status": anomaly_status
     })
 
-    print("Pipeline log ingested:", run_id)
+    return run_id
