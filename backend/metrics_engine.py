@@ -1,12 +1,28 @@
-from app.services.mongo_client import metrics
+from sklearn.ensemble import IsolationForest
+import numpy as np
 
 
-def get_average_errors():
+def calculate_severity(error_count, warning_count):
 
-    data = list(metrics.find())
+    score = (error_count * 2) + warning_count
 
-    if not data:
-        return 0
+    if score <= 2:
+        level = "Low"
+    elif score <= 6:
+        level = "Medium"
+    else:
+        level = "Critical"
 
-    total = sum([m["error_count"] for m in data])
-    return total / len(data)
+    return score, level
+
+
+def detect_anomaly(error_count, warning_count):
+
+    X = np.array([[error_count, warning_count]])
+
+    model = IsolationForest(contamination=0.2)
+    model.fit(X)
+
+    result = model.predict(X)
+
+    return "Anomaly" if result[0] == -1 else "Normal"
