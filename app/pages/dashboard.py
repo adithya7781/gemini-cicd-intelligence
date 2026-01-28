@@ -12,7 +12,7 @@ def render():
     total_runs = runs.count_documents({})
     failed_runs = runs.count_documents({"status": "failed"})
 
-    metric_docs = list(metrics.find())
+    metric_docs = list(metrics.find({}, {"_id": 0}))
 
     if total_runs == 0:
         st.warning("No pipeline runs found.")
@@ -23,8 +23,11 @@ def render():
         if metric_docs else 0
     )
 
-    summary_cards(total_runs, failed_runs, avg_errors)
+    critical_count = metrics.count_documents({"severity_level": "Critical"})
 
-    run_data = list(runs.find({}, {"_id": 0, "status": 1}))
-    pipeline_status_chart(run_data)
-    show_runs_table(run_data)
+    summary_cards(total_runs, failed_runs, avg_errors, critical_count)
+
+    run_status = list(runs.find({}, {"_id": 0, "status": 1}))
+    pipeline_status_chart(run_status)
+
+    show_runs_table(metric_docs)
