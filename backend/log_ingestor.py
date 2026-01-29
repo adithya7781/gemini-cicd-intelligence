@@ -28,7 +28,7 @@ def ingest_log(file_path):
         warning_count
     )
 
-    critical_flag, critical_reasons = detect_critical_alert(
+    critical_alert, critical_reasons = detect_critical_alert(
     error_count,
     warning_count,
     full_text
@@ -64,12 +64,13 @@ def ingest_log(file_path):
         "severity_score": severity_score,
         "severity_level": severity_level,
         "anomaly_status": anomaly_status,
-        "critical_alert": critical_flag,
+        "critical_alert": critical_alert,
         "critical_reasons": critical_reasons,
         "timestamp": timestamp
     })
 
     return run_id
+
 
 
 
