@@ -1,6 +1,6 @@
 import uuid
 from backend.log_parser import parse_log
-from backend.metrics_engine import calculate_severity, detect_anomaly
+from backend.metrics_engine import calculate_severity, detect_anomaly, detect_critical_alert
 from backend.mongo_client import runs, logs, metrics
 
 
@@ -10,6 +10,7 @@ def ingest_log(file_path):
 
     error_count = parsed["error_count"]
     warning_count = parsed["warning_count"]
+    full_text = parsed["full_text"]
 
     severity_score, severity_level = calculate_severity(error_count, warning_count)
 
@@ -43,3 +44,4 @@ def ingest_log(file_path):
     })
 
     return run_id
+
