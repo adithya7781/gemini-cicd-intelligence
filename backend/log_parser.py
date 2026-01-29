@@ -70,4 +70,6 @@ def parse_log(file_path):
     return {
         "error_count": error_count,
         "warning_count": warning_count
+        "full_text":"\n".join(lines)
     }
+
