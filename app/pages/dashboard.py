@@ -23,7 +23,7 @@ def render():
         if metric_docs else 0
     )
 
-    critical_count = metrics.count_documents({"severity_level": "Critical"})
+    critical_count = metrics.count_documents({"critical_alert": True})
 
     summary_cards(total_runs, failed_runs, avg_errors, critical_count)
 
@@ -31,3 +31,4 @@ def render():
     pipeline_status_chart(run_status)
 
     show_runs_table(metric_docs)
+
