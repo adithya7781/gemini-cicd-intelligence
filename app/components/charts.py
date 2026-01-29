@@ -1,22 +1,30 @@
 import streamlit as st
-import pandas as pd
 import plotly.express as px
+import pandas as pd
 
 
-def pipeline_status_chart(run_data):
+def pipeline_status_chart(run_status):
 
-    df = pd.DataFrame(run_data)
+    if not run_status:
+        st.warning("No pipeline data to display")
+        return
 
-    status_counts = df["status"].value_counts().reset_index()
+    df = pd.DataFrame(run_status)
+
+    status_counts = (
+        df["status"]
+        .value_counts()
+        .reset_index()
+    )
+
     status_counts.columns = ["status", "count"]
 
     fig = px.bar(
         status_counts,
         x="status",
         y="count",
-        title="Pipeline Run Status",
+        title="Pipeline Execution Status",
         template="plotly_dark"
     )
 
     st.plotly_chart(fig, width="stretch")
-
