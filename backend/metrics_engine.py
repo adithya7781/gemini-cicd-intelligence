@@ -46,7 +46,7 @@ def detect_critical_alert(error_count, warning_count, logs_text):
     logs_upper = logs_text.upper()
 
     # High error volume
-    if error_count >= 3:
+    if error_count >= 2:
         critical = True
         reasons.append("High error volume")
 
@@ -64,3 +64,4 @@ def detect_critical_alert(error_count, warning_count, logs_text):
         reasons.append("Build failed")
 
     return critical, reasons
+
