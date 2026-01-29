@@ -8,8 +8,11 @@ def extract_pdf_text(file_path):
     text = ""
     with open(file_path, "rb") as file:
         reader = PyPDF2.PdfReader(file)
+
         for page in reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
 
     return text
 
@@ -21,25 +24,25 @@ def parse_log(file_path):
 
     ext = file_path.split(".")[-1].lower()
 
-    # TXT / LOG
+    # ---------- TXT / LOG ----------
     if ext in ["log", "txt"]:
 
         with open(file_path, "r", errors="ignore") as f:
             lines = f.readlines()
 
-    # CSV
+    # ---------- CSV ----------
     elif ext == "csv":
 
         df = pd.read_csv(file_path)
-        lines = df.astype(str).values.flatten()
+        lines = df.astype(str).values.flatten().tolist()
 
-    # Excel
+    # ---------- Excel ----------
     elif ext == "xlsx":
 
         df = pd.read_excel(file_path)
-        lines = df.astype(str).values.flatten()
+        lines = df.astype(str).values.flatten().tolist()
 
-    # JSON
+    # ---------- JSON ----------
     elif ext == "json":
 
         with open(file_path) as f:
@@ -47,7 +50,7 @@ def parse_log(file_path):
 
         lines = json.dumps(data).split(",")
 
-    # PDF
+    # ---------- PDF ----------
     elif ext == "pdf":
 
         text = extract_pdf_text(file_path)
@@ -56,7 +59,7 @@ def parse_log(file_path):
     else:
         raise ValueError("Unsupported file format")
 
-    # Count errors and warnings
+    # ---------- Count errors and warnings ----------
     for line in lines:
 
         line = str(line).lower()
@@ -64,12 +67,11 @@ def parse_log(file_path):
         if "error" in line:
             error_count += 1
 
-        if "warning" in line:
+        if "warning" in line or "warn" in line:
             warning_count += 1
 
     return {
         "error_count": error_count,
-        "warning_count": warning_count
-        "full_text":"\n".join(lines)
+        "warning_count": warning_count,
+        "full_text": "\n".join(map(str, lines))
     }
-
