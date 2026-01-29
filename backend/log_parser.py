@@ -62,16 +62,17 @@ def parse_log(file_path):
     # ---------- Count errors and warnings ----------
     for line in lines:
 
-        line = str(line).lower()
+    line = str(line).lower()
 
-        if "error" in line:
-            error_count += 1
+    if "error" in line and "without error" not in line and "no error" not in line:
+        error_count += 1
 
-        if "warning" in line or "warn" in line:
-            warning_count += 1
+    if "warning" in line and "no warning" not in line:
+        warning_count += 1
 
     return {
         "error_count": error_count,
         "warning_count": warning_count,
         "full_text": "\n".join(map(str, lines))
     }
+
