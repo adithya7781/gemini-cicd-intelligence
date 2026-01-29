@@ -28,11 +28,11 @@ def ingest_log(file_path):
         warning_count
     )
 
-    critical_alert = detect_critical_alert(
-        error_count,
-        warning_count,
-        full_text
-    )
+    critical_flag, critical_reasons = detect_critical_alert(
+    error_count,
+    warning_count,
+    full_text
+)
 
     run_id = str(uuid.uuid4())
 
@@ -69,4 +69,5 @@ def ingest_log(file_path):
     })
 
     return run_id
+
 
