@@ -1,7 +1,7 @@
 import streamlit as st
 from services.mongo_client import runs, metrics
 from components.cards import summary_cards
-from components.charts import pipeline_status_chart
+from components.charts import pipeline_status_chart, error_trend_line_chart
 from components.tables import show_runs_table
 
 
@@ -33,6 +33,9 @@ def render():
     run_status = list(runs.find({}, {"_id": 0, "status": 1}))
     pipeline_status_chart(run_status)
 
+    error_trend_line_chart(metric_docs)
+
     show_runs_table(metric_docs)
+
 
 
